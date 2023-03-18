@@ -19,15 +19,17 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable();
         http.authorizeHttpRequests()
-                .requestMatchers(HttpMethod.GET, "/test/anonymous", "/test/anonymous/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/test/admin", "/test/admin/**").hasRole(ADMIN)
-                .requestMatchers(HttpMethod.GET, "/test/user").hasAnyRole(ADMIN, USER)
+                .requestMatchers(HttpMethod.POST, "/api/login", "/api/login/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/anonymous", "/api/anonymous/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/admin", "/api/admin/**").hasRole(ADMIN)
+                .requestMatchers(HttpMethod.GET, "/api/user").hasAnyRole(ADMIN, USER)
                 .anyRequest().authenticated();
         http.oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(jwtAuthConverter);
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
     }
 }
